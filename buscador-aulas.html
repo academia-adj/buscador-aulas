@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buscador de Aula - Auxiliar Administrativo del Estado 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght=400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f7f5f0;--card:#ffffff;--primary:#1a365d;--accent:#c53030;
+  --text:#2d3748;--muted:#718096;--border:#e2e0db;
+  --success:#276749;--success-bg:#c6f6d5;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+.header{background:var(--primary);color:#fff;padding:2rem 1.5rem 1.5rem;text-align:center}
+.header h3{font-family:'DM Serif Display',serif;font-size:1.6rem;font-weight:400;line-height:1.3;margin-bottom:.4rem}
+.header p{font-size:.85rem;opacity:.75;font-weight:400}
+.badge{display:inline-block;background:var(--accent);color:#fff;font-size:.7rem;font-weight:600;padding:.25rem .6rem;border-radius:3px;margin-top:.6rem;letter-spacing:.03em;text-transform:uppercase}
+.container{max-width:600px;margin:0 auto;padding:1.5rem 1rem}
+.search-box{background:var(--card);border-radius:12px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 16px rgba(0,0,0,.04);border:1px solid var(--border)}
+.search-box label{display:block;font-weight:600;font-size:.85rem;margin-bottom:.5rem;color:var(--primary)}
+.search-box .hint{font-size:.75rem;color:var(--muted);margin-bottom:.75rem;line-height:1.4}
+select{width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:8px;font-size:1rem;font-family:inherit;color:var(--text);background:#fff;margin-bottom:1rem;cursor:pointer}
+select:focus{outline:none;border-color:var(--primary)}
+.input-wrap{position:relative}
+.input-wrap input{width:100%;padding:.75rem 1rem .75rem 2.6rem;border:2px solid var(--border);border-radius:8px;font-size:1rem;font-family:inherit;color:var(--text);transition:border-color .2s;background:var(--bg)}
+.input-wrap input:focus{outline:none;border-color:var(--primary);background:#fff}
+.input-wrap input:disabled{opacity:0.5;cursor:not-allowed}
+.input-wrap .icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
+.results{margin-top:1.25rem}
+.result-card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 16px rgba(0,0,0,.04);border:1px solid var(--border);margin-bottom:.75rem;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result-card .name{font-weight:700;font-size:1.05rem;color:var(--primary);margin-bottom:.85rem}
+.result-card .info-grid{display:grid;grid-template-columns:auto 1fr;gap:.4rem .75rem;font-size:.85rem}
+.result-card .label{font-weight:600;color:var(--muted);text-transform:uppercase;font-size:.7rem;letter-spacing:.04em;padding-top:2px}
+.result-card .value{color:var(--text);line-height:1.4}
+.result-card .aula-highlight{display:inline-block;background:var(--success-bg);color:var(--success);font-weight:700;font-size:1.1rem;padding:.2rem .7rem;border-radius:6px}
+.no-results{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.9rem;line-height:1.5}
+.no-results .emoji{font-size:2rem;margin-bottom:.5rem;display:block}
+.result-count{font-size:.78rem;color:var(--muted);margin-bottom:.6rem;font-weight:500}
+.too-many{text-align:center;padding:1.25rem;background:#fffbeb;border:1px solid #f6e05e;border-radius:8px;color:#744210;font-size:.85rem;line-height:1.5}
+.result-card .pdf-link{display:inline-flex;align-items:center;gap:.35rem;margin-top:.6rem;font-size:.78rem;font-weight:600;color:var(--primary);text-decoration:none;padding:.35rem .7rem;background:#ebf4ff;border-radius:6px;transition:background .2s}
+.result-card .pdf-link:hover{background:#d0e3ff;text-decoration:underline}
+.result-card .pdf-link svg{width:14px;height:14px;flex-shrink:0}
+.footer-note{text-align:center;margin-top:2rem;padding:1rem;font-size:.7rem;color:var(--muted);line-height:1.5;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h3>Buscador de Aula</h3>
+  <p>Cuerpo General Auxiliar de la Administración del Estado</p>
+  <div class="badge">23 de mayo de 2026 &#183; 10:00 h</div>
+</div>
+
+<div class="container">
+  <div class="search-box">
+    <label for="sede-select">1. Selecciona tu sede de examen</label>
+    <select id="sede-select">
+      <option value="" selected disabled>-- Elige una provincia --</option>
+      <option value="acoruna">A Coruña</option>
+      <option value="alava">Álava</option>
+      </select>
+
+    <label for="search">2. Busca tus apellidos</label>
+    <p class="hint">Mínimo 3 caracteres. Recuerda escribir los apellidos tal como aparecen en las listas.</p>
+    <div class="input-wrap">
+      <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search" placeholder="Primero selecciona una sede..." autocomplete="off" disabled>
+    </div>
+  </div>
+
+  <div id="results" class="results"></div>
+
+  <div class="footer-note">
+    Datos extraídos de las listas oficiales de distribución por aulas publicadas por el INAP.<br>
+    Te recomendamos confirmar siempre tu asignación en el documento oficial de tu sede.
+  </div>
+</div>
+
+<script>
+// Configuración estática de Sedes, Lugares y PDFs oficiales de descarga
+var CONFIG_SEDES = {
+  "acoruna": { name: "A Coruña", lugar: "Universidad de A Coruña, Campus de Elviña, 15008 A Coruña", pdf: "https://sede.inap.gob.es/sites/sede/files/public/2026-05/A%20CORU%C3%91A_AUX-LI_GEN-CRD.pdf" },
+  "alava": { name: "Álava", lugar: "Facultad de Farmacia – UPV, Paseo de la Universidad 7, 01006 – Vitoria-Gasteiz", pdf: "https://sede.inap.gob.es/sites/sede/files/public/2026-05/ALAVA%20Farmacia%20AUX_L.pdf" }
+};
+
+var CURRENT_DATA = []; // Aquí se guardará temporalmente la sede descargada dinámicamente
+
+var sedeSelect = document.getElementById("sede-select");
+var searchInput = document.getElementById("search");
+var resultsBox = document.getElementById("results");
+
+// Escuchar cuando el usuario cambia de provincia
+sedeSelect.addEventListener("change", function() {
+  var sedeKey = this.value;
+  searchInput.disabled = true;
+  searchInput.value = "";
+  searchInput.placeholder = "Cargando datos de la sede...";
+  resultsBox.innerHTML = "";
+  
+  // Hacemos una llamada dinámica para bajarnos SOLO el archivo JSON de esa sede
+  fetch("datos/" + sedeKey + ".json")
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      CURRENT_DATA = data; // Guardamos los opositores en memoria
+      searchInput.disabled = false;
+      searchInput.placeholder = "Escribe tus apellidos...";
+      searchInput.focus();
+    })
+    .catch(function(err) {
+      searchInput.placeholder = "Error al cargar la sede. Reintenta.";
+      console.error("Error cargando el archivo JSON:", err);
+    });
+});
+
+function normalize(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim();
+}
+
+function search(query){
+  var q = normalize(query);
+  if(q.length < 3) return [];
+  var terms = q.split(/\s+/);
+  return CURRENT_DATA.filter(function(entry){
+    var n = normalize(entry[0]);
+    return terms.every(function(t){ return n.indexOf(t) !== -1; });
+  });
+}
+
+function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+function render(results, query){
+  if(query.trim().length < 3){ resultsBox.innerHTML = ""; return; }
+  if(results.length === 0){
+    resultsBox.innerHTML = '<div class="no-results"><span class="emoji">&#x1F50D;</span>No se ha encontrado ningún aspirante con ese nombre en esta sede.</div>';
+    return;
+  }
+  if(results.length > 20){
+    resultsBox.innerHTML = '<div class="too-many">Se han encontrado <strong>'+results.length+'</strong> resultados. Escribe más letras para concretar la búsqueda.</div>';
+    return;
+  }
+  
+  var sedeKey = sedeSelect.value;
+  var config = CONFIG_SEDES[sedeKey];
+  
+  var html = '<div class="result-count">'+results.length+" resultado"+(results.length!==1?"s":"")+"</div>";
+  results.forEach(function(r){
+    // r[0]: Nombre, r[1]: Aula, r[2]: Planta, r[3]: Facultad
+    var plantaHtml = r[2] ? '<div class="label">Planta</div><div class="value">' + esc(r[2]) + '</div>' : '';
+    var facultadHtml = r[3] ? '<div class="label">Facultad</div><div class="value"><strong>' + esc(r[3]) + '</strong></div>' : '';
+    
+    html += '<div class="result-card">'+
+      '<div class="name">'+esc(r[0])+'</div>'+
+      '<div class="info-grid">'+
+        facultadHtml +
+        '<div class="label">Aula</div><div class="value"><span class="aula-highlight">'+esc(r[1])+'</span></div>'+
+        plantaHtml +
+        '<div class="label">Sede</div><div class="value">'+esc(config.name)+'</div>'+
+        '<div class="label">Lugar</div><div class="value">'+esc(config.lugar)+'</div>'+
+        '<div class="label">Fecha</div><div class="value">23 de mayo de 2026, 10:00 h</div>'+
+      '</div>'+
+      '<a class="pdf-link" href="'+config.pdf+'" target="_blank" rel="noopener"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2-8H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9l-4-4z"/></svg>Ver PDF Oficial Sede</a>'+
+    '</div>';
+  });
+  resultsBox.innerHTML = html;
+}
+
+searchInput.addEventListener("input", function(){
+  var q = this.value;
+  var res = search(q);
+  render(res, q);
+});
+</script>
+</body>
+</html>
